@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <!-- Webpage Title -->
+        <title>m:iHerb</title>
+
+        <!-- Required meta tags -->
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+              integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+              crossorigin="anonymous">
+        <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap-switch-button@1.1.0/css/bootstrap-switch-button.min.css"
+              rel="stylesheet">
+
+        <!-- Optional JavaScript -->
+        <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+                integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+                crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+                integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap-switch-button@1.1.0/dist/bootstrap-switch-button.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+        <!-- 폰트-->
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
+
+        <style>
+            #navbar {
+                background-image: linear-gradient(112deg, rgba(69, 133, 0, 1) 0%, rgba(122, 196, 42, 1) 38%, rgba(255, 233, 21, 1) 100%);
+            }
+
+            img {
+                height: 15%;
+                width: 15%;
+                margin-top: 5px;
+                margin-bottom: 5px;
+                margin-left: 10px;
+                margin-right: 10px;
+            }
+
+            a:link, a:visited {
+                color: inherit;
+            }
+
+            textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
+                border-color: rgba(83, 186, 43, 1);
+                box-shadow: 0 0.5px 0.5px rgba(83, 186, 43, 0.075) inset, 0 0 8px rgba(83, 186, 43, 0.6);
+                outline: 0 none;
+            }
+
+            .jumbotron {
+                padding-top: 10px;
+                padding-bottom: 10px;
+            }
+
+            .switch.ios, .switch-on.ios, .switch-off.ios {
+                border-radius: 10rem;
+            }
+
+            .switch.ios .switch-handle {
+                border-radius: 10rem;
+            }
+
+            .column {
+                /*border: 1px dotted;*/
+                padding-top: 10px;
+                padding-bottom: 10px;
+                padding-right: 5px;
+                padding-left: 5px;
+            }
+
+            .container-fluid {
+                max-width: 414px;
+                padding-left: 0px;
+                padding-right: 0px;
+                /*margin: auto;*/
+                /*border: 1px dashed;*/
+                /*margin-top: 20px;*/
+            }
+
+            .container-fluid .card {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            /* 이동 타켓 */
+            .card-placeholder {
+                border: 1px dashed black;
+                margin: 0 1em 1em 0;
+                height: 75px;
+                margin-left: auto;
+                margin-right: auto;
+                /* 노란색으로 표신되는 것이 주요 포인트 */
+                background-color: lightgoldenrodyellow;
+            }
+
+            /* 마우스 포인터을 손가락으로 변경 */
+            .card:not(.no-move) .card-header {
+                cursor: pointer;
+            }
+        </style>
+
+        <script>
+            $(document).ready(function () {
+                $("#cards-box").html("");
+                showList();
+            });
+
+            $(function () {
+                $(".column").sortable({
+                    // 드래그 앤 드롭 단위 css 선택자
+                    connectWith: ".column",
+                    // 움직이는 css 선택자
+                    handle: ".card-header",
+                    // 움직이지 못하는 css 선택자
+                    cancel: ".no-move",
+                    // 이동하려는 location에 추가 되는 클래스
+                    placeholder: "card-placeholder"
+                });
+                // 해당 클래스 하위의 텍스트 드래그를 막는다.
+                $(".column .card").disableSelection();
+            });
+
+            function openClose() {
+                // class 값 collapse의 display 값이 none 이면(= 눈에 안보이면)
+                if ($(".collapse").css("display") == "none") {
+                    // 다시 버튼을 클릭하면, 박스 열기를 할 수 있게 텍스트 바꿔두기
+                    $("#collapse-icon").attr("class", "bi bi-dash")
+                    $("#icon-path").attr("d", "M4 8a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7A.5.5 0 0 1 4 8z")
+                } else {
+                    // 아니면(눈에 보이면)
+                    // 다시 버튼을 클릭하면, 박스 열기를 할 수 있게 텍스트 바꿔두기
+                    $("#collapse-icon").attr("class", "bi bi-plus")
+                    $("#icon-path").attr("d", "M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z")
+                }
+            }
+
+            function postList() {
+                // 1. 유저가 입력한 데이터를 #post-url에 가져오기
+                let url = $("#post-url").val();
+                // let findiHerb = "kr.iherb.com";
+                //
+                // if (url.indexOf(findiHerb) != -1) {
+                //     alert("성공!");
+                // } else {
+                //     alert("실패!");
+                // }
+
+                // 2. memo에 POST 방식으로 메모 생성 요청하기
+                $.ajax({
+                    type: "POST", // POST 방식으로 요청하겠다.
+                    url: "/api/list", // /api/list라는 url에 요청하겠다.
+                    data: {url_give: url}, // 데이터를 주는 방법
+                    success: function (response) { // 성공하면
+                        if (response["result"] == "success") {
+                            alert(response["msg"]);
+                            // 3. 성공 시 페이지 새로고침하기
+                            window.location.reload();
+                        } else {
+                            alert("서버 오류!")
+                        }
+                    }
+                })
+            }
+
+            function showList() {
+                $.ajax({
+                    type: "GET",
+                    url: "/api/list",  // /api/list라는 url에 요청하겠다.
+                    data: {},
+                    success: function (response) {
+                        if (response["result"] == "success") {
+                            let lists = response['lists'];
+                            for (let i = 0; i < lists.length; i++) {
+                                makeCard(lists[i]["image"], lists[i]["url"], lists[i]["title"], lists[i]["category"], lists[i]["direction"])
+                            }
+                        }
+                    }
+                })
+            }
+
+            function makeCard(image, url, title, category, direction) {
+                let temp_html = `
+                    <div class="card mb-2">
+                        <div class="card-header row form-inline no-gutters">
+                            <div class="col-9">
+                                <span class="align-middle">${category}</span>
+                            </div>
+                            <div class="col-3 no-move text-right">
+                                <input type="checkbox" data-toggle="switchbutton" data-size="sm" data-width="85"
+                                       data-onlabel="&#x2713 먹음"
+                                       data-offlabel="&#x2715 아직" data-style="ios"
+                                       data-onstyle="success">
+                            </div>
+                        </div>
+                        <div class="row form-inline no-gutters">
+                            <div class="col-3">
+                                    <img src="${image}" class="card-img" alt="${title}">
+                            </div>
+                            <div class="col-9">
+                                <div class="card-body">
+                                <h6 class="card-title">
+                                    <a href="${url}" target="_blank">${title}</a>
+                                </h6>
+                                    <p class="card-text">${direction}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                $("#cards-box").append(temp_html);
+            }
+
+
+            // validation 스크립트
+            (function () {
+                'use strict';
+                window.addEventListener('load', function () {
+                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+                    var forms = document.getElementsByClassName('needs-validation');
+                    // Loop over them and prevent submission
+                    var validation = Array.prototype.filter.call(forms, function (form) {
+                        urlSubmit.addEventListener('click', function (event) {
+                            if (form.checkValidity() === false) {
+                                event.preventDefault();
+                                event.stopPropagation();
+                            }
+                            form.classList.add('was-validated');
+                        }, false);
+                    });
+                }, false);
+            })();
+        </script>
+    </head>
+
+    <body>
+        <div class="container-fluid">
+            <div class="header">
+                <!--상단바-->
+                <nav class="navbar sticky-top navbar-dark" id="navbar">
+                    <span class="navbar-brand mb-0 h1">m:iHerb</span>
+                    <button onclick="openClose()" class="btn btn-outline-success" type="button" data-toggle="collapse"
+                            data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <svg id="collapse-icon" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-plus"
+                             fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path id="icon-path" fill-rule="evenodd"
+                                  d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/>
+                        </svg>
+                    </button>
+                </nav>
+
+                <!--collapse버튼 누르면 나오는 영역-->
+                <div class="collapse" id="navbarToggleExternalContent">
+                    <div class="bg-light p-4">
+                        <h5 class="text-black h5">무슨 약인가요?</h5>
+                        <form class="needs-validation" novalidate>
+                            <div class="input-group">
+                                <input id="post-url" type="text" class="form-control" placeholder="Product URL"
+                                       aria-label="product url" aria-describedby="urlSubmit" required>
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-success" type="button" id="urlSubmit"
+                                            onclick="postList()">등록
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">
+                                    url을 입력하세요.
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+            <div class="main">
+                <!--전체 카드 리스트-->
+                <div class="col-12 column" id="cards-box">
+                    <!-- 각 카드 리스트 박스 -->
+                    <div class="card mb-2">
+                        <div class="card-header row form-inline no-gutters">
+                            <div class="col-9">
+                                <span class="align-middle">카테고리</span>
+                            </div>
+                            <div class="col-3 no-move text-right">
+                                <input type="checkbox" data-toggle="switchbutton" data-size="sm" data-width="85"
+                                       data-onlabel="&#x2713 먹음"
+                                       data-offlabel="&#x2715 아직" data-style="ios"
+                                       data-onstyle="success">
+                            </div>
+                        </div>
+                        <div class="row form-inline no-gutters">
+                            <div class="col-3">
+                                <!--                                <img src="${image}" class="card-img" alt="${title}">-->
+                            </div>
+                            <div class="col-9">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="${url}" target="_blank">상품명</a>
+                                    </h6>
+                                    <p class="card-text">제품 사용법</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="submit mb-3">
+                    <button type="button" class="btn btn-success btn-lg btn-block">
+                        <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-pencil-square"
+                             fill="currentColor"
+                             xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456l-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                            <path fill-rule="evenodd"
+                                  d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5v11z"/>
+                        </svg>
+                        다먹었다
+                    </button>
+                </div>
+            </div>
+            <div class="footer jumbotron jumbotron-fluid mb-0 text-center">
+                <div class="container">
+                    <p class="lead">copyright 어쩌구</p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
