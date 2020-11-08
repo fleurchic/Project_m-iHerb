@@ -2,6 +2,7 @@ from pymongo import MongoClient
 import requests
 from bs4 import BeautifulSoup
 from flask import Flask, render_template, jsonify, request
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
@@ -17,7 +18,7 @@ def home():
 
 # API 역할을 하는 부분
 # db 만들기 API
-@app.route('/api/list', methods=['POST'])
+@app.route('/data', methods=['POST'])
 def post_list():
     # 1. 클라이언트로부터 데이터를 받기
     url_receive = request.form['url_give']
@@ -32,8 +33,9 @@ def post_list():
     iherb_brand = soup.select_one('meta[property="og:brand"]')['content']
     iherb_img = soup.select_one('#iherb-product-image')['src']
 
-    a12 = soup.select_one('#breadCrumbs > a:nth-child(12)')
     a7 = soup.select_one('#breadCrumbs > a:nth-child(7)')
+    a12 = soup.select_one('#breadCrumbs > a:nth-child(12)')
+
     if a12 is not None:
         iherb_category = a12.text
     elif a7 is not None:
@@ -43,29 +45,47 @@ def post_list():
 
     iherb_direction = soup.select_one(
         'body > div.product-grouping-wrapper.defer-block > article > div.container.product-overview > div > section > div.inner-content > div > div > div.col-xs-24.col-md-14 > div:nth-child(2) > div > div').text
+    iherb_checked = 0
 
     list = {'url': url_receive, 'title': iherb_title, 'brand': iherb_brand, 'image': iherb_img,
-            'category': iherb_category, 'direction': iherb_direction}
+            'category': iherb_category, 'direction': iherb_direction, 'checked': iherb_checked}
 
     # 3. mongoDB에 데이터를 넣기
     db.supplements.insert_one(list)
     return jsonify({'result': 'success', 'msg': '등록했습니다!'})
 
 
-@app.route('/api/list', methods=['GET'])
+@app.route('/list', methods=['GET'])
 def read_list():
-    # 1. mongoDB에서 _id 값을 제외한 모든 데이터 조회해오기 (Read)
-    result = list(db.supplements.find({}, {'_id': 0}))
-    # 2. lists라는 키 값으로 list 정보 보내주기
+    # 1. mongoDB에서 모든 데이터를 리스트로 조회하기 (Read)
+    read_result = list(db.supplements.find({}))
+
+    # 2. 조회해 온 리스트에서 _id값을 string 값으로 바꾸기
+    def id_decoder(list):
+        results = []
+        for document in list:
+            document['_id'] = str(document['_id'])
+            results.append(document)
+        return results
+
+    result = id_decoder(read_result)
+
+    # 2. 불러온 정보들을 json 형식으로 보내주기
     return jsonify({'result': 'success', 'msg': 'get 연결됨', 'lists': result})
 
 
-@app.route('/api/delete', methods=['POST'])
-def delete_star():
-    # 1. 클라이언트가 전달한 name_give를 name_receive 변수에 넣습니다.
-    # 2. mystar 목록에서 delete_one으로 name이 name_receive와 일치하는 star를 제거합니다.
+@app.route('/update', methods=['POST'])
+def update_list():
+    # 1. 클라이언트가 전달한 id_give를 id_receive 변수에 넣습니다.
+    check_receive = request.form['check_give']
+    id_receive = request.form['id_give']
+
+    # 2. supplements 목록에서 _id이 id_received인 문서의 checked 를 check_received로 변경합니다.
+    # 참고: '$set' 활용하기!
+    db.supplements.update_one({"_id": ObjectId(id_receive)}, {'$set': {'checked': check_receive}})
+
     # 3. 성공하면 success 메시지를 반환합니다.
-    return jsonify({'result': 'success', 'msg': 'delete 연결되었습니다!'})
+    return jsonify({'result': 'success', 'msg': 'update 테스트'})
 
 
 if __name__ == '__main__':
