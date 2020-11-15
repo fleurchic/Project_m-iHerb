@@ -6,14 +6,14 @@ from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
-client = MongoClient('localhost', 27017)
+client = MongoClient('mongodb://test:test@52.79.208.17',27017)
 db = client.dbsparta
 
 
 # HTML 화면 보여주기
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index03.html')
 
 
 # API 역할을 하는 부분

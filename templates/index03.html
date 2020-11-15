@@ -32,13 +32,29 @@
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 
         <style>
+            body {
+                background: #27AE60;
+            }
+
+            /*.footer {*/
+            /*    position: fixed;*/
+            /*}*/
+
             #navbar {
                 background-image: linear-gradient(112deg, rgba(69, 133, 0, 1) 0%, rgba(122, 196, 42, 1) 38%, rgba(255, 233, 21, 1) 100%);
+            }
+
+            .h1 {
+                color: #fff;
+                text-align: center;
+                font-size: 40px;
+                font-weight: 100;
             }
 
             img {
                 height: 15%;
                 width: 15%;
+                border-radius: 10px;
                 margin-top: 5px;
                 margin-bottom: 5px;
                 margin-left: 10px;
@@ -53,6 +69,10 @@
                 border-color: rgba(83, 186, 43, 1);
                 box-shadow: 0 0.5px 0.5px rgba(83, 186, 43, 0.075) inset, 0 0 8px rgba(83, 186, 43, 0.6);
                 outline: 0 none;
+            }
+
+            .card {
+                border-radius: 10px;
             }
 
             .jumbotron {
@@ -93,6 +113,7 @@
             /* 이동 타켓 */
             .card-placeholder {
                 border: 1px dashed black;
+                border-radius: 10px;
                 margin: 0 1em 1em 0;
                 height: 75px;
                 margin-left: auto;
@@ -105,6 +126,8 @@
             .card:not(.no-move) .card-header {
                 cursor: pointer;
             }
+
+
         </style>
 
         <script>
@@ -174,45 +197,45 @@
                         if (response["result"] == "success") {
                             let lists = response['lists'];
                             for (let i = 0; i < lists.length; i++) {
-                                makeCard(lists[i]["image"], lists[i]["url"], lists[i]["title"], lists[i]["category"], lists[i]["direction"], lists[i]["_id"], lists[i]["checked"])
-                            }
-                        }
-                    }
-                })
-            }
+                                var img = lists[i]["image"];
+                                var url = lists[i]["url"];
+                                var title = lists[i]["title"];
+                                var category = lists[i]["category"];
+                                var direction = lists[i]["direction"];
+                                var id = lists[i]["_id"];
+                                var checked = lists[i]["checked"];
+                                // makeCard(img, url, title, category, direction, id, checked)
 
-            function makeCard(image, url, title, category, direction, id, checked) {
-                // let button_html = `<input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
-                //                        onclick="update(${id}, 1)"
-                //                        data-onlabel="&#x2713 먹음"
-                //                        data-offlabel="&#x2715 아직" data-style="ios"
-                //                        data-onstyle="success">`
+                                let button_html = `
+                    <div class="no-move" style="float: right;" onclick="update('${id}', 1)">
+                        <input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
+                            data-onlabel="&#x2713 먹음"
+                            data-offlabel="&#x2715 아직" data-style="ios"
+                            data-onstyle="success"
+                            data-style="quick">
+                    </div>`
 
-                let button_html = `<input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
-                                       data-onlabel="&#x2713 먹음"
-                                       data-offlabel="&#x2715 아직" data-style="ios"
-                                       data-onstyle="success">`
+                                if (checked == 1) {
+                                    button_html = `
+                        <div class="no-move" style="float: right;" onclick="update('${id}', 0)">
+                            <input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
+                                data-onlabel="&#x2713 먹음"
+                                data-offlabel="&#x2715 아직" data-style="ios"
+                                data-onstyle="success" checked
+                                data-style="quick">
+                        </div>`
+                                }
 
-
-                if (checked == 1) {
-                    button_html = `<input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
-                                       data-onlabel="&#x2713 먹음"
-                                       data-offlabel="&#x2715 아직" data-style="ios"
-                                       data-onstyle="success" checked>`
-                }
-
-                let temp_html = `<div class="card mb-2">
+                                let temp_html = `<div class="card mb-2">
                         <div class="card-header row form-inline no-gutters">
                             <div class="col-9">
                                 <span class="align-middle">${category}</span>
                             </div>
-                            <div class="no-move text-right" onclick="update()">
                                 ` + button_html + `
-                            </div>
                         </div>
                         <div class="row form-inline no-gutters">
                             <div class="col-3">
-                                    <img src="${image}" class="card-img" alt="${title}">
+                                    <img src="${img}" class="card-img" alt="${title}">
                             </div>
                             <div class="col-9">
                                 <div class="card-body">
@@ -226,26 +249,77 @@
                     </div>
                 `;
 
-                $("#cards-box").append(temp_html);
+                                $("#cards-box").append(temp_html);
+
+
+                            }
+                        }
+                    }
+                })
             }
 
-            function update() {
+            // function makeCard(image, url, title, category, direction, id, checked) {
+            //     let button_html = `
+            //         <div class="no-move" style="float: right;" onclick="update(id)">
+            //             <input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
+            //                 data-onlabel="&#x2713 먹음"
+            //                 data-offlabel="&#x2715 아직" data-style="ios"
+            //                 data-onstyle="success">
+            //         </div>`
+            //
+            //     if (checked == 1) {
+            //         button_html = `
+            //             <div class="no-move" style="float: right;" onclick="update(id)">
+            //                 <input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
+            //                     data-onlabel="&#x2713 먹음"
+            //                     data-offlabel="&#x2715 아직" data-style="ios"
+            //                     data-onstyle="success" checked>
+            //             </div>`
+            //     }
+            //
+            //     let temp_html = `<div class="card mb-2">
+            //             <div class="card-header row form-inline no-gutters">
+            //                 <div class="col-9">
+            //                     <span class="align-middle">${category}</span>
+            //                 </div>
+            //                     ` + button_html + `
+            //             </div>
+            //             <div class="row form-inline no-gutters">
+            //                 <div class="col-3">
+            //                         <img src="${image}" class="card-img" alt="${title}">
+            //                 </div>
+            //                 <div class="col-9">
+            //                     <div class="card-body">
+            //                     <h6 class="card-title">
+            //                         <a href="${url}" target="_blank">${title}</a>
+            //                     </h6>
+            //                         <p class="card-text">${direction}</p>
+            //                     </div>
+            //                 </div>
+            //             </div>
+            //         </div>
+            //     `;
+            //
+            //     $("#cards-box").append(temp_html);
+            // }
+
+            function update(id, checked) {
                 // 1. 서버에 1) POST 방식으로, 2) /update 라는 url에, 3) name_give라는 이름으로 name을 전달합니다.
                 // 참고) POST 방식이므로 data: {'name_give': name} 과 같은 양식이 되어야합니다!
-                    console.log("working");
-                // $.ajax({
-                //     type: "POST",
-                //     url: "/update",
-                //     data: {'id_give': id, 'check_give': checked},
-                //     success: function (response) {
-                //         if (response['result'] == 'success') {
-                //             // 2. '업데이트 테스트!' 얼럿을 띄웁니다.
-                //             alert('업데이트 테스트!')
-                //             // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
-                //             window.location.reload()
-                //         }
-                //     }
-                // });
+                console.log("working");
+                $.ajax({
+                    type: "POST",
+                    url: "/update",
+                    data: {'id_give': id, 'check_give': checked},
+                    success: function (response) {
+                        if (response['result'] == 'success') {
+                            // 2. '업데이트 테스트!' 얼럿을 띄웁니다.
+                            alert('업데이트 테스트!')
+                            // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
+                            window.location.reload()
+                        }
+                    }
+                });
             }
 
             function submit(id, checked) {
@@ -276,8 +350,8 @@
 
     <body>
         <div class="container-fluid">
+            <!--상단바-->
             <div class="header">
-                <!--상단바-->
                 <nav class="navbar sticky-top navbar-dark" id="navbar">
                     <span class="navbar-brand mb-0 h1">m:iHerb</span>
                     <button onclick="openClose()" class="btn btn-outline-success" type="button" data-toggle="collapse"
@@ -314,16 +388,8 @@
                 </div>
             </div>
 
+
             <div class="main">
-                <!--여기까지 먹었어요 버튼-->
-                <div class="submit mb-1 mt-3">
-                    <button type="button" onclick="submit()" class="btn btn-outline-success btn-lg"
-                            style="margin-left:auto; margin-right:auto">
-                        💊 여기까지 먹었어요
-                    </button>
-                </div>
-
-
                 <!--전체 카드 리스트-->
                 <div class="col-12 column" id="cards-box">
                     <!-- 각 카드 리스트 박스 -->
@@ -357,11 +423,12 @@
                 </div>
             </div>
 
-            <!--            <div class="footer jumbotron jumbotron-fluid mb-0 text-center">-->
-            <!--                <div class="container">-->
-            <!--                    <p class="lead">copyright 어쩌구</p>-->
-            <!--                </div>-->
-            <!--            </div>-->
+            <!--푸터-->
+            <div class="footer jumbotron jumbotron-fluid mb-0 text-center">
+                <div class="container">
+                    <p class="lead">copyright 어쩌구</p>
+                </div>
+            </div>
         </div>
     </body>
 </html>
