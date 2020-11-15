@@ -85,7 +85,7 @@ def update_list():
     db.supplements.update_one({"_id": ObjectId(id_receive)}, {'$set': {'checked': check_receive}})
 
     # 3. 성공하면 success 메시지를 반환합니다.
-    return jsonify({'result': 'success', 'msg': 'update 테스트'})
+    return jsonify({'result': 'success'})
 
 
 if __name__ == '__main__':

@@ -15,6 +15,10 @@
               crossorigin="anonymous">
         <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap-switch-button@1.1.0/css/bootstrap-switch-button.min.css"
               rel="stylesheet">
+<!--        <link href="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/css/bootstrap4-toggle.min.css" rel="stylesheet">-->
+
+
+
 
         <!-- Optional JavaScript -->
         <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -26,7 +30,8 @@
                 integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
                 crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap-switch-button@1.1.0/dist/bootstrap-switch-button.min.js"></script>
-        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+<!--        <script src="https://cdn.jsdelivr.net/gh/gitbrent/bootstrap4-toggle@3.6.1/js/bootstrap4-toggle.min.js"></script>-->
+<!--        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>-->
 
         <!-- 폰트-->
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
@@ -41,7 +46,8 @@
             /*}*/
 
             #navbar {
-                background-image: linear-gradient(112deg, rgba(69, 133, 0, 1) 0%, rgba(122, 196, 42, 1) 38%, rgba(255, 233, 21, 1) 100%);
+                /*background-image: linear-gradient(112deg, rgba(69, 133, 0, 1) 0%, rgba(122, 196, 42, 1) 38%, rgba(255, 233, 21, 1) 100%);*/
+                background: #27AE60;
             }
 
             .h1 {
@@ -127,6 +133,9 @@
                 cursor: pointer;
             }
 
+            .btn {
+                border-radius: 40px;
+            }
 
         </style>
 
@@ -206,52 +215,60 @@
                                 var checked = lists[i]["checked"];
                                 // makeCard(img, url, title, category, direction, id, checked)
 
+                                // let button_html = `
+                                //     <div class="no-move" style="float: right;" onclick="update('${id}', 1)">
+                                //         <input type="checkbox" data-toggle="switchbutton" data-size="sm" data-width="85"
+                                //             data-onlabel="&#x2713 먹음"
+                                //             data-offlabel="&#x2715 아직" data-style="ios"
+                                //             data-onstyle="success">
+                                //     </div>`
+                                //
+                                // if (checked == 1) {
+                                //     button_html = `
+                                //         <div class="no-move" style="float: right;" onclick="update('${id}', 0)">
+                                //             <input type="checkbox" data-toggle="switchbutton" data-size="sm" data-width="85"
+                                //                 data-onlabel="&#x2713 먹음"
+                                //                 data-offlabel="&#x2715 아직" data-style="ios"
+                                //                 data-onstyle="success" checked>
+                                //         </div>`;
+                                // }
+
                                 let button_html = `
-                    <div class="no-move" style="float: right;" onclick="update('${id}', 1)">
-                        <input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
-                            data-onlabel="&#x2713 먹음"
-                            data-offlabel="&#x2715 아직" data-style="ios"
-                            data-onstyle="success"
-                            data-style="quick">
-                    </div>`
+                                    <div class="no-move" style="float: right;">
+                                        <button type="button" class="btn btn-success" onclick="update('${id}', 1)">&#x2713 먹음</button>
+                                    </div>`
 
                                 if (checked == 1) {
                                     button_html = `
-                        <div class="no-move" style="float: right;" onclick="update('${id}', 0)">
-                            <input type="checkbox" id="${id}" data-toggle="switchbutton" data-size="sm" data-width="85"
-                                data-onlabel="&#x2713 먹음"
-                                data-offlabel="&#x2715 아직" data-style="ios"
-                                data-onstyle="success" checked
-                                data-style="quick">
-                        </div>`
+                                        <div class="no-move" style="float: right;">
+                                            <button type="button" class="btn btn-secondary" onclick="update('${id}', 0)">&#x2715 아직</button>
+                                        </div>`;
                                 }
 
-                                let temp_html = `<div class="card mb-2">
-                        <div class="card-header row form-inline no-gutters">
-                            <div class="col-9">
-                                <span class="align-middle">${category}</span>
-                            </div>
-                                ` + button_html + `
-                        </div>
-                        <div class="row form-inline no-gutters">
-                            <div class="col-3">
-                                    <img src="${img}" class="card-img" alt="${title}">
-                            </div>
-                            <div class="col-9">
-                                <div class="card-body">
-                                <h6 class="card-title">
-                                    <a href="${url}" target="_blank">${title}</a>
-                                </h6>
-                                    <p class="card-text">${direction}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
+                                let temp_html = `
+                                    <div class="card mb-2">
+                                        <div class="card-header row form-inline no-gutters">
+                                            <div class="col-9">
+                                                <span class="align-middle">${category}</span>
+                                            </div>
+                                            ` + button_html + `
+                                        </div>
+                                        <div class="row form-inline no-gutters">
+                                            <div class="col-3">
+                                                <img src="${img}" class="card-img" alt="${title}">
+                                            </div>
+                                            <div class="col-9">
+                                                <div class="card-body">
+                                                    <h6 class="card-title">
+                                                        <a href="${url}" target="_blank">${title}</a>
+                                                    </h6>
+                                                    <p class="card-text">${direction}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>`;
 
                                 $("#cards-box").append(temp_html);
-
-
                             }
                         }
                     }
@@ -313,8 +330,6 @@
                     data: {'id_give': id, 'check_give': checked},
                     success: function (response) {
                         if (response['result'] == 'success') {
-                            // 2. '업데이트 테스트!' 얼럿을 띄웁니다.
-                            alert('업데이트 테스트!')
                             // 3. 변경된 정보를 반영하기 위해 새로고침합니다.
                             window.location.reload()
                         }
@@ -354,7 +369,7 @@
             <div class="header">
                 <nav class="navbar sticky-top navbar-dark" id="navbar">
                     <span class="navbar-brand mb-0 h1">m:iHerb</span>
-                    <button onclick="openClose()" class="btn btn-outline-success" type="button" data-toggle="collapse"
+                    <button onclick="openClose()" class="btn navbar-toggler" type="button" data-toggle="collapse"
                             data-target="#navbarToggleExternalContent" aria-controls="navbarToggleExternalContent"
                             aria-expanded="false" aria-label="Toggle navigation">
                         <svg id="collapse-icon" width="1.5em" height="1.5em" viewBox="0 0 16 16" class="bi bi-plus"
@@ -368,7 +383,7 @@
 
                 <!--collapse버튼 누르면 나오는 영역-->
                 <div class="collapse" id="navbarToggleExternalContent">
-                    <div class="bg-light p-4">
+                    <div class="bg-light p-4" style="border-radius: 10px;">
                         <h5 class="text-black h5">무슨 약인가요?</h5>
                         <form class="needs-validation" novalidate>
                             <div class="input-group">
@@ -393,42 +408,42 @@
                 <!--전체 카드 리스트-->
                 <div class="col-12 column" id="cards-box">
                     <!-- 각 카드 리스트 박스 -->
-                    <div class="card mb-2">
-                        <div class="card-header row form-inline no-gutters">
-                            <div class="col-9">
-                                <span class="align-middle">카테고리</span>
-                            </div>
-                            <div class="col-3 no-move text-right">
-                                <input type="checkbox" data-toggle="switchbutton" data-size="sm" data-width="85"
-                                       onclick="update()"
-                                       data-onlabel="&#x2713 먹음"
-                                       data-offlabel="&#x2715 아직" data-style="ios"
-                                       data-onstyle="success">
-                            </div>
-                        </div>
-                        <div class="row form-inline no-gutters">
-                            <div class="col-3">
-                                <!--                                <img src="${image}" class="card-img" alt="${title}">-->
-                            </div>
-                            <div class="col-9">
-                                <div class="card-body">
-                                    <h6 class="card-title">
-                                        <a href="${url}" target="_blank">상품명</a>
-                                    </h6>
-                                    <p class="card-text">제품 사용법</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+<!--                    <div class="card mb-2">-->
+<!--                        <div class="card-header row form-inline no-gutters">-->
+<!--                            <div class="col-9">-->
+<!--                                <span class="align-middle">카테고리</span>-->
+<!--                            </div>-->
+<!--                            <div class="col-3 no-move text-right">-->
+<!--                                <input type="checkbox" data-toggle="switchbutton" data-size="sm" data-width="85"-->
+<!--                                       onclick="update()"-->
+<!--                                       data-onlabel="&#x2713 먹음"-->
+<!--                                       data-offlabel="&#x2715 아직" data-style="ios"-->
+<!--                                       data-onstyle="success">-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="row form-inline no-gutters">-->
+<!--                            <div class="col-3">-->
+<!--                                &lt;!&ndash;                                <img src="${image}" class="card-img" alt="${title}">&ndash;&gt;-->
+<!--                            </div>-->
+<!--                            <div class="col-9">-->
+<!--                                <div class="card-body">-->
+<!--                                    <h6 class="card-title">-->
+<!--                                        <a href="${url}" target="_blank">상품명</a>-->
+<!--                                    </h6>-->
+<!--                                    <p class="card-text">제품 사용법</p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
                 </div>
             </div>
 
-            <!--푸터-->
-            <div class="footer jumbotron jumbotron-fluid mb-0 text-center">
-                <div class="container">
-                    <p class="lead">copyright 어쩌구</p>
-                </div>
-            </div>
+<!--            &lt;!&ndash;푸터&ndash;&gt;-->
+<!--            <div class="footer jumbotron jumbotron-fluid mb-0 text-center">-->
+<!--                <div class="container">-->
+<!--                    <p class="lead">copyright 어쩌구</p>-->
+<!--                </div>-->
+<!--            </div>-->
         </div>
     </body>
 </html>
