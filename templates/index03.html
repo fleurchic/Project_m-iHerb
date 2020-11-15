@@ -235,13 +235,13 @@
 
                                 let button_html = `
                                     <div class="no-move" style="float: right;">
-                                        <button type="button" class="btn btn-success" onclick="update('${id}', 1)">&#x2713 먹음</button>
+                                        <button type="button" class="btn btn-secondary" onclick="update('${id}', 1)">&#x2715 아직</button>
                                     </div>`
 
                                 if (checked == 1) {
                                     button_html = `
                                         <div class="no-move" style="float: right;">
-                                            <button type="button" class="btn btn-secondary" onclick="update('${id}', 0)">&#x2715 아직</button>
+                                            <button type="button" class="btn btn-success" onclick="update('${id}', 0)">&#x2713 먹음</button>
                                         </div>`;
                                 }
 
