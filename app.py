@@ -1,3 +1,7 @@
+import time
+import atexit
+
+from apscheduler.schedulers.background import BackgroundScheduler
 from pymongo import MongoClient
 import requests
 from bs4 import BeautifulSoup
@@ -6,7 +10,7 @@ from bson.objectid import ObjectId
 
 app = Flask(__name__)
 
-client = MongoClient('mongodb://test:test@52.79.208.17',27017)
+client = MongoClient('mongodb://test:test@52.79.208.17', 27017)
 db = client.dbsparta
 
 
@@ -16,8 +20,23 @@ def home():
     return render_template('index03.html')
 
 
+# 매일 정해진 시간에 복용 여부 초기화시키
+def reset_check():
+    print(time.strftime("%A, %d. %B %Y %I:%M:%S %p"))
+    db.supplements.update_many({"checked": 1}, {'$set': {'checked': 0}})
+
+
+sched = BackgroundScheduler()
+sched.add_job(reset_check, 'cron', hour='0', minute='0', second='0', id='sched_01')
+
+sched.start()
+
+# Shut down the scheduler when exiting the app
+atexit.register(lambda: sched.shutdown())
+
+
 # API 역할을 하는 부분
-# db 만들기 API
+# url에서 정보 받아서 db에 저장하는 CREATE API
 @app.route('/data', methods=['POST'])
 def post_list():
     # 1. 클라이언트로부터 데이터를 받기
@@ -34,14 +53,23 @@ def post_list():
     iherb_img = soup.select_one('#iherb-product-image')['src']
 
     a7 = soup.select_one('#breadCrumbs > a:nth-child(7)')
+    a8 = soup.select_one('#breadCrumbs > a:nth-child(8)')
     a12 = soup.select_one('#breadCrumbs > a:nth-child(12)')
+    a11 = soup.select_one('#breadCrumbs > a:nth-child(11)')
 
-    if a12 is not None:
+    if a7.text in ['밀크 시슬(실리마린)', '쏘팔메토', '글루코사민 포뮬러', '프로바이오틱스']:
+        iherb_category = a7.text
+    elif a8 is not None:
+        iherb_category = a8.text
+    elif a12 is not None:
         iherb_category = a12.text
     elif a7 is not None:
         iherb_category = a7.text
+    elif a11 is not None:
+        iherb_category = a11.text
     else:
-        iherb_category = soup.select_one('#breadCrumbs > a:nth-child(11)').text
+        iherb_category = soup.select_one('#breadCrumbs > a:nth-child(6)').text
+    print(iherb_category)
 
     iherb_direction = soup.select_one(
         'body > div.product-grouping-wrapper.defer-block > article > div.container.product-overview > div > section > div.inner-content > div > div > div.col-xs-24.col-md-14 > div:nth-child(2) > div > div').text
@@ -55,6 +83,7 @@ def post_list():
     return jsonify({'result': 'success', 'msg': '등록했습니다!'})
 
 
+# 화면 로딩할 때마다 db에 저장한 정보를 읽어오는 READ API
 @app.route('/list', methods=['GET'])
 def read_list():
     # 1. mongoDB에서 모든 데이터를 리스트로 조회하기 (Read)
@@ -70,22 +99,27 @@ def read_list():
 
     result = id_decoder(read_result)
 
-    # 2. 불러온 정보들을 json 형식으로 보내주기
-    return jsonify({'result': 'success', 'msg': 'get 연결됨', 'lists': result})
+    # 3. db불러온 정보들(_id값은 string으로 바꿈)을 json 형식으로 보내주기
+    return jsonify({'result': 'success', 'lists': result})
 
 
+# 버튼을 누를 때마다 영양제 복용 여부를 db에 업데이트하는 UPDATE API
 @app.route('/update', methods=['POST'])
 def update_list():
     # 1. 클라이언트가 전달한 id_give를 id_receive 변수에 넣습니다.
     check_receive = request.form['check_give']
     id_receive = request.form['id_give']
 
-    # 2. supplements 목록에서 _id이 id_received인 문서의 checked 를 check_received로 변경합니다.
-    # 참고: '$set' 활용하기!
-    db.supplements.update_one({"_id": ObjectId(id_receive)}, {'$set': {'checked': check_receive}})
+    # 2. check_receive 값을 string 이 아니라 integer 로 만들기
+    # 왜인지 모르겠지만 이거 안해도 작동은 하는데 찜찜해서. 대신 이거 안했더니 다른 함수에서 checked 값 호출할때 '' 붙여줘야 인식함)
+    check_receive2 = int(check_receive)
 
-    # 3. 성공하면 success 메시지를 반환합니다.
-    return jsonify({'result': 'success'})
+    # 3. supplements 목록에서 _id 값이 id_received 인 문서의 checked 를 check_received 로 변경합니다.
+    # 참고: '$set' 활용하기!
+    db.supplements.update_one({"_id": ObjectId(id_receive)}, {'$set': {'checked': check_receive2}})
+
+    # 4. 성공하면 success 메시지를 반환합니다.
+    return jsonify({'result': 'success', 'card_id': id_receive})
 
 
 if __name__ == '__main__':
