@@ -27,7 +27,7 @@ def reset_check():
 
 
 sched = BackgroundScheduler()
-sched.add_job(reset_check, 'cron', hour='0', minute='0', second='0', id='sched_01')
+sched.add_job(reset_check, 'cron', hour='0', minute='30', second='0', id='sched_01')
 
 sched.start()
 
@@ -100,7 +100,10 @@ def read_list():
     result = id_decoder(read_result)
 
     # 3. db불러온 정보들(_id값은 string으로 바꿈)을 json 형식으로 보내주기
-    return jsonify({'result': 'success', 'lists': result})
+    if not read_result:
+        return jsonify({'result': 'empty'})
+    else:
+        return jsonify({'result': 'success', 'lists': result})
 
 
 # 버튼을 누를 때마다 영양제 복용 여부를 db에 업데이트하는 UPDATE API
@@ -116,10 +119,22 @@ def update_list():
 
     # 3. supplements 목록에서 _id 값이 id_received 인 문서의 checked 를 check_received 로 변경합니다.
     # 참고: '$set' 활용하기!
-    db.supplements.update_one({"_id": ObjectId(id_receive)}, {'$set': {'checked': check_receive2}})
+    db.supplements.update_one({'_id': ObjectId(id_receive)}, {'$set': {'checked': check_receive2}})
 
     # 4. 성공하면 success 메시지를 반환합니다.
     return jsonify({'result': 'success', 'card_id': id_receive})
+
+
+@app.route('/delete', methods=['POST'])
+def delete_list():
+    # 1. 클라이언트가 전달한 id_give를 id_receive 변수에 넣습니다.
+    id_receive = request.form['id_give']
+
+    # 2. mystar 목록에서 delete_one으로 name이 name_receive와 일치하는 star를 제거합니다.
+    db.supplements.delete_one({'_id': ObjectId(id_receive)})
+
+    # 3. 성공하면 success 메시지를 반환합니다.
+    return jsonify({'result': 'success'})
 
 
 if __name__ == '__main__':
