@@ -27,13 +27,13 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
                 integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
                 crossorigin="anonymous"></script>
-
+        <script src="https://cdn.rawgit.com/PascaleBeier/bootstrap-validate/v2.2.0/dist/bootstrap-validate.js"></script>
 
         <!-- 폰트-->
         <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR&display=swap" rel="stylesheet">
 
         <style>
-            /*인풋 포커스시 색깔 초록색으로*/
+            /*인풋 포커스시 테두리 초록색으로*/
             textarea:focus, input:focus, input[type]:focus, .uneditable-input:focus {
                 border-color: rgba(83, 186, 43, 1);
                 box-shadow: 0 0.5px 0.5px rgba(83, 186, 43, 0.075) inset, 0 0 8px rgba(83, 186, 43, 0.6);
@@ -44,23 +44,9 @@
                 max-width: 414px;
                 padding-left: 0px;
                 padding-right: 0px;
-                background: linear-gradient(#458000 30%, white 95%);
+                background: linear-gradient(#458000 30%, white 90%);
                 height: 100vh;
             }
-
-            /*@media screen and (min-width: 769px) {*/
-            /*    body {*/
-            /*        background: #458000;*/
-            /*        !*background: linear-gradient(#458000 20%, white 80%);*!*/
-            /*    }*/
-
-            /*    .container-fluid {*/
-            /*        max-width: 414px;*/
-            /*        padding-left: 0px;*/
-            /*        padding-right: 0px;*/
-            /*        background: #458000;*/
-            /*    }*/
-            /*}*/
 
             .h1 {
                 color: #fff;
@@ -112,9 +98,14 @@
                 margin-left: 10px;
             }
 
+            .btn.btn-outline-success {
+                border-radius: 0;
+            }
+
             .btn {
                 border-radius: 40px;
             }
+
 
             .checking {
                 background-color: #458000;
@@ -156,11 +147,14 @@
             $(document).ready(function () {
                 // $("#cards-box").html("");
                 showList();
+                bootstrapValidate(
+                    '#post-url',
+                    'contains:kr.iherb.com/pr:iHerb 제품 URL을 입력하세요.'
+                );
             });
 
-            $(function () {
-                $('[data-toggle="tooltip"]').tooltip({animation: true})
-            })
+
+            // $(".forTooltip").tooltip()
 
 
             function openClose() {
@@ -242,7 +236,7 @@
                                     <div class="card mb-2" id="${id}">
                                         <div class="card-header row form-inline no-gutters">
                                             <div class="col-1" id="deleteButton">
-                                                <a data-toggle="tooltip" data-placement="bottom" title="이 영양제 지우기">
+                                                <a class="forTooltip" data-toggle="tooltip" data-placement="bottom" title="이 영양제 지우기">
                                                     <svg onclick="deleteCard('${id}')" width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-x" id="del_${id}" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                                                         <path id="path" fill-rule="evenodd" d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                                                     </svg>
@@ -269,6 +263,9 @@
                                     </div>`;
 
                                 $("#cards-box").append(temp_html);
+                                $(".forTooltip").tooltip({
+                                    delay: {"show": 500, "hide": 0}
+                                });
                             }
                         }
                     }
@@ -315,26 +312,6 @@
                 });
             }
 
-
-            // validation 스크립트
-            (function () {
-                'use strict';
-                window.addEventListener('load', function () {
-                    // Fetch all the forms we want to apply custom Bootstrap validation styles to
-                    var forms = document.getElementsByClassName('needs-validation');
-                    // Loop over them and prevent submission
-                    var validation = Array.prototype.filter.call(forms, function (form) {
-                        urlSubmit.addEventListener('click', function (event) {
-                            if (form.checkValidity() === false) {
-                                event.preventDefault();
-                                event.stopPropagation();
-                            }
-                            form.classList.add('was-validated');
-                        }, false);
-                    });
-                }, false);
-            })();
-
         </script>
     </head>
 
@@ -359,21 +336,16 @@
                 <!--버튼 누르면 나오는 영역-->
                 <div class="collapse" id="navbarToggleExternalContent">
                     <div class="bg-light p-4 collapse-box">
-                        <h5 class="text-black h5">무슨 약인가요?</h5>
-                        <form class="needs-validation" novalidate>
-                            <div class="input-group mb-2">
-                                <input id="post-url" type="text" class="form-control" placeholder="Product URL"
-                                       aria-label="product url" aria-describedby="urlSubmit" required>
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-success" type="button" id="urlSubmit"
-                                            onclick="postList()">등록
-                                    </button>
-                                </div>
-                                <div class="invalid-feedback">
-                                    url을 입력하세요.
-                                </div>
+                        <h5 class="text-black h5">💊 영양제를 등록하세요. </h5>
+                        <div class="input-group mb-2">
+                            <input id="post-url" type="text" class="form-control" placeholder="Product URL"
+                                   aria-label="product url" aria-describedby="urlSubmit">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-success" type="button" id="urlSubmit"
+                                        onclick="postList()">등록
+                                </button>
                             </div>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>

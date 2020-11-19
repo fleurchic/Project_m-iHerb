@@ -27,7 +27,7 @@ def reset_check():
 
 
 sched = BackgroundScheduler()
-sched.add_job(reset_check, 'cron', hour='0', minute='30', second='0', id='sched_01')
+sched.add_job(reset_check, 'cron', hour='20', minute='45', second='0', id='sched_01')
 
 sched.start()
 
